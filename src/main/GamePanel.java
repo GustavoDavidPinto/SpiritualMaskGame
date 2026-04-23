@@ -1,6 +1,9 @@
 package main;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Random;
+
 import javax.swing.JPanel;
 
 import main.inputs.KeyboardInputs;
@@ -10,12 +13,16 @@ import main.inputs.MouseInputs;
 public class GamePanel extends JPanel {
 
     private MouseInputs mouseInputs;
+    private long lastCheck = 0;
+    private Color color = new Color(150, 20, 90);
+    private Random random;
 
     // Posição do retângulo na tela
-    private int xDelta = 100, yDelta = 100;
+    private float xDelta = 100, yDelta = 100;
+    private float xDir = 1f, yDir = 1f;
 
     public GamePanel() {
-
+        random = new Random();
         // Inicializa controle do mouse
         mouseInputs = new MouseInputs(this);
 
@@ -38,7 +45,6 @@ public class GamePanel extends JPanel {
         this.xDelta += value;
 
         // Solicita redesenho da tela
-        repaint();
     }
 
     // Move no eixo Y (vertical)
@@ -46,14 +52,12 @@ public class GamePanel extends JPanel {
 
         this.yDelta += value;
 
-        repaint();
     }
 
     // Define posição diretamente (usado normalmente com mouse)
     public void setRecPos(int x, int y) {
         this.xDelta = x;
         this.yDelta = y;
-        repaint();
     }
 
     // Método responsável por desenhar na tela
@@ -62,8 +66,36 @@ public class GamePanel extends JPanel {
 
         // Limpa a tela antes de redesenhar (evita "rastros")
         super.paintComponent(g);
-
+        
+        g.setColor(color);
+        updateRectanglee();
         // Desenha um retângulo sólido na posição atual
-        g.fillRect(xDelta, yDelta, 200, 50);
+        g.fillRect((int) xDelta, (int) yDelta, 200, 50);
+
+      
+    }
+
+    private void updateRectanglee() {
+        xDelta += xDir;
+        if (xDelta > 400 || xDelta < 0) {
+            xDir *= -1;
+            color = getRndColor();
+
+        }
+
+        yDelta += yDir;
+        if (yDelta > 400 || yDelta < 0) {
+            yDir *= -1;
+            color = getRndColor();
+
+        }
+    }
+
+    private Color getRndColor() {
+        int r = random.nextInt(255);
+        int g = random.nextInt(255);
+        int b = random.nextInt(255);
+
+        return new Color(r, g, b);
     }
 }
